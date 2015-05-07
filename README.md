@@ -1,10 +1,11 @@
-#SVG2Canvas Converter [SVG2Canvas - https://github.com/samsha/svg2canvas](https://github.com/samsha/svg2canvas)
+#SVG2Canvas Converter
 
 [在线演示 - http://demo.qunee.com/svg2canvas/](http://demo.qunee.com/svg2canvas/)
 
 #使用方式
 
 ##目录结构
+
 src/
   --canvg-master/ -- canvg.js
   canvg2.js -- 修改生成的canvg.js
@@ -13,7 +14,15 @@ src/
   run.sh -- 运行，生成canvg2.js
 index.html -- SVG to Canvas 工具
 
+##运行
+
 请运行run.js或者run.sh，生成修改后的src/canvg2.js，然后运行index.html
+```
+cd src
+node run
+```
+
+![SVG to HTML5 Canvas](image/Screen-Shot-2015-04-30-at-6.16.41-PM-1024x581.png)
 
 #用途说明
 

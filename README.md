@@ -16,12 +16,12 @@ index.html -- SVG to Canvas 工具
 
 ##运行
 
-请运行run.js或者run.sh，生成修改后的src/canvg2.js，然后运行index.html
+请运行run.js或者run.sh，生成修改后的src/canvg2.js
 ```
 cd src
 node run
 ```
-
+然后浏览器中访问index.html
 ![SVG to HTML5 Canvas](image/Screen-Shot-2015-04-30-at-6.16.41-PM-1024x581.png)
 
 #用途说明

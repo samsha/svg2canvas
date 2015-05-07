@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>SVG to HTML5 Canvas Converter</title>
+    <meta name="author" content="Sam Sha">
+    <meta name="keyword" content="html5,canvas,javascript,svg">
+    <meta name="description"
+          content="SVG to HTML5 Canvas Converter based on canvg.js, can be used in Qunee for HTML5 as node image">
+    <link rel="stylesheet" href="http://qunee.com/js/bootstrap/css/bootstrap.min.css"/>
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="src/canvg-master/examples/flashcanvas.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="src/canvg-master/rgbcolor.js"></script>
+    <script type="text/javascript" src="src/canvg2.js?v=1.0"></script>
+    <script type="text/javascript" src="src/canvg-master/StackBlur.js"></script>
+    <style>
+        body {
+            margin: 0px;
+            /*font-family: "Bitstream Vera Sans Mono", Consolas, Courier, monospace;*/
+            font-size: 15px;
+        }
+
+        .page {
+            padding: 10px;
+            position: absolute;
+            width: 100%;
+            top: 0px;
+            bottom: 0px;
+        }
+
+        div, textarea, canvas {
+            box-sizing: border-box;
+        }
+
+        .page > div {
+            height: 100%;
+            float: left;
+        }
+
+        .left {
+            width: 24%;
+            background-color: #EEE;
+            overflow-x: hidden;
+            overflow-y: auto;
+            border: dashed 5px #888;
+            box-sizing: border-box;
+        }
+
+        .center {
+            width: 52%;
+            padding: 0px 10px;
+
+        }
+
+        .center h1 {
+            text-align: center;
+        }
+
+        .right {
+            width: 24%;
+            background-color: #EEE;
+        }
+
+        .right > textarea {
+            outline: none;
+            border: solid 1px #E0E0E0;
+            background-color: #FFE;
+            padding: 10px;
+            font-size: 0.8em;
+        }
+
+        #dropMessage {
+            position: absolute;
+            left: 4%;
+            top: 90px;
+            color: #2898E0;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        canvas {
+            font-family: '';
+        }
+
+        #canvas {
+        }
+
+        #q-canvas {
+            width: 100%;
+            height: 100%;
+            border: solid 1px #2898E0;
+        }
+
+        #code {
+            width: 100%;
+            height: 100%;
+        }
+
+        .title-pane > div {
+            padding: 10px;
+            font-size: 1.5em;
+            background-color: #EEE;
+            display: inline-block;
+
+        }
+
+    </style>
+</head>
+<body>
+<div id="page" class="page">
+    <div class="left">
+        <canvas id="canvas"></canvas>
+        <div id="dropMessage">
+            Drop SVG files here.
+        </div>
+    </div>
+    <div class="center">
+        <table style="width: 100%; height: 100%;" cellspacing="0">
+            <tr style="height: 20%;">
+                <td>
+                        <ul class="nav navbar-nav navbar-right main_nav">
+                            <li class="active"><a target="_blank" href="http://qunee.com/index-en.html">Qunee.com</a></li>
+                        </ul>
+                    <h1>SVG to Canvas Converter</h1>
+
+                    <div class="title-pane">
+                        <div>&lt; SVG Files</div>
+                        <div style="float: right">Canvas Code &gt;</div>
+                    </div>
+                    <div style="text-align: center; margin: 10px auto;">
+                        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                        <ins class="adsbygoogle"
+                             style="display:inline-block;width:320px;height:50px"
+                             data-ad-client="ca-pub-3132876633721837"
+                             data-ad-slot="6179545304"></ins>
+                        <script>
+                            (adsbygoogle = window.adsbygoogle || []).push({});
+                        </script>
+                    </div>
+                    <p>
+                        <b>modified by <a href="https://github.com/samsha">Sam Sha</a> based on <a
+                                href="https://github.com/gabelerner/canvg">canvg.js</a></b>
+                    </p>
+                    Supports the following browsers: <b>Chrome, Safari</b>
+                    <p>
+                        Can be used for the node image in <a href="http://qunee.com">Qunee for HTML5</a> as follows:
+                    </p>
+                </td>
+            </tr>
+            <tr style="height: 80%">
+                <td>
+                    <div id="q-canvas"></div>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+    <div class="right">
+        <textarea id="code" spellcheck='false'></textarea>
+    </div>
+</div>
+<script type="text/javascript">
+    var imageMaxWidth = 80;
+    var page = document.getElementById('page');
+    var code_out = document.getElementById('code');
+    var canvas = document.getElementById('canvas');
+    var left = document.getElementById('left');
+    var dropMessage = document.getElementById('dropMessage');
+    var g = canvas.g = canvas.getContext('2d');
+
+    var backingStoreRatio = g.webkitBackingStorePixelRatio ||
+            g.mozBackingStorePixelRatio ||
+            g.msBackingStorePixelRatio ||
+            g.oBackingStorePixelRatio ||
+            g.backingStorePixelRatio || 1;
+    var ratio = (window.devicePixelRatio || 1) / backingStoreRatio;
+
+    function setSize(width, height, canvas) {
+        canvas = canvas || window.canvas;
+        canvas.width = width * ratio;
+        canvas.height = height * ratio;
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+    }
+
+    setSize(canvas.parentNode.clientWidth, canvas.parentNode.clientHeight - 6);
+
+    function drawSVGImageByCanvg(img, x, y) {
+        var tempCanvas = document.createElement('canvas');
+        tempCanvas.name = img.name;
+        tempCanvas.x = x;
+        tempCanvas.y = y;
+//        setSize(img.width, img.height, tempCanvas);
+        tempCanvas.width = img.width;
+        tempCanvas.height = img.height;
+        tempCanvas.style.zIndex = -1;
+        tempCanvas.style.visibility = 'hidden'
+        page.appendChild(tempCanvas);
+
+        canvg(tempCanvas, atob(img.src.substring('data:image/svg+xml;base64,'.length)), {
+            ignoreMouse: true,
+            ignoreAnimation: true,
+            ignoreDimensions: true,
+            ignoreClear: true,
+//            offsetX: x,
+//            offsetY: y,
+            scaleWidth: img.width,
+            renderCallback: function (dom) {
+//                drawCanvas.call(tempCanvas);
+//                tempCanvas.parentNode.removeChild(tempCanvas);
+            }
+        });
+    }
+
+    canvas.ondragenter = function () {
+        this.style.background = '#FF0'
+        return false;
+    };
+
+    canvas.ondragleave = function () {
+        this.style.background = ''
+    }
+
+    canvas.ondragover = function () {
+        return false;
+    };
+
+    var images = [];
+    var completedImageCount = 0;
+
+    function drawCanvas() {
+        g.save();
+        g.scale(ratio, ratio);
+        g.drawImage(this, this.x, this.y);
+        g.restore();
+
+        this.parentNode.removeChild(this);
+    }
+    window.onSVGDraw = function (code, canvas) {
+        setTimeout(drawCanvas.bind(canvas), 500)
+
+        completedImageCount++;
+        code_out.value += '"' + canvas.name + '": ' + code;
+        if (completedImageCount < images.length) {
+            code_out.value += ',';
+        } else {
+            code_out.value += "}\nfor(var name in SVGIcons){\n\
+            Q.registerImage(name, SVGIcons[name]);\n\
+        }";
+        }
+    }
+
+    function finish() {
+        dropMessage.innerHTML = '';
+        canvas.style.position = 'relative';
+
+        code_out.value = 'var SVGIcons = {\n';
+        completedImageCount = 0;
+
+        var x = 10, y = 0, gap = 5;
+        var borderWidth = 3;
+        var width = canvas.parentNode.clientWidth - borderWidth * 2;
+        var height = 0;
+
+        images.forEach(function (image) {
+            var w = image.width;
+            var h = image.height;
+            if (w > imageMaxWidth) {
+                h = imageMaxWidth * h / w;
+                w = imageMaxWidth;
+                image.width = w;
+                image.height = h;
+            }
+            height += h + gap;
+        });
+        height = Math.max(canvas.parentNode.clientHeight - borderWidth * 2, height + 30);
+
+        setSize(width, height);
+
+        g.save();
+        g.scale(ratio, ratio);
+
+        g.fillText('draw SVG by image', width * 0.1, 20);
+        g.fillText('draw SVG by canvg.js', width * 0.6, 20);
+
+        y += 30;
+
+        var i = 0;
+        var length = images.length;
+        while (i < length) {
+            var image = images[i];
+            i++;
+
+            var w = image.width;
+            var h = image.height;
+
+            g.drawImage(image, x, y, w, h);
+            drawSVGImageByCanvg(image, x + width / 2, y);
+            y += gap + image.height;
+        }
+        g.restore();
+
+        setTimeout(function () {
+            updateGraph();
+        }, 2000)
+    }
+    canvas.ondrop = function (e) {
+        this.style.background = '';
+
+        code_out.value = '';
+        images = [];
+        e.stopPropagation();
+        e.preventDefault();
+        var files = e.dataTransfer.files;
+        for (var i = 0; i < files.length; i++) {
+            var f = files[i];
+            var numbers = files.length;
+            if (f.type.indexOf('image') == 0) {
+                (function (f) {
+                    var name = f.name,
+                            type = f.type;
+                    if (typeof FileReader == 'undefined') {
+                        alert('Sorry, FileReader() not supported, switch to Chrome and try again.')
+                    }
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var dataURL = e.target.result;
+                        var imgEL = new Image();
+                        imgEL.name = name;
+                        imgEL.onload = function (e) {
+                            var image = e.target;
+
+//                            name = name.substring(0, name.lastIndexOf('.'));
+                            image.name = name;
+                            images.push(image);
+                            --numbers;
+                            if (numbers === 0) {
+                                finish();
+                            }
+                        }
+                        imgEL.src = dataURL;
+                    };
+                    reader.readAsDataURL(f);
+
+                })(f);
+            }
+        }
+    };
+</script>
+<script src="http://demo.qunee.com/lib/qunee-min.js"></script>
+<script>
+    var graph = new Q.Graph('q-canvas');
+    graph.maxScale = 5;
+    var hello = graph.createNode("SVG Files", -100, 0);
+    var qunee = graph.createText("Canvas Code", 100, 0);
+    qunee.setStyle(Q.Styles.LABEL_BORDER, 0.5);
+    qunee.setStyle(Q.Styles.LABEL_PADDING, 5);
+    qunee.setStyle(Q.Styles.LABEL_BORDER_STYLE, "#1D4876");
+    qunee.setStyle(Q.Styles.LABEL_BACKGROUND_COLOR, "#FFF");
+    var edge = graph.createEdge("Converter", hello, qunee);
+
+    edge.setStyle(Q.Styles.LABEL_OFFSET_Y, -10);
+    edge.setStyle(Q.Styles.LABEL_POSITION, Q.Position.CENTER_TOP);
+    edge.setStyle(Q.Styles.LABEL_ANCHOR_POSITION, Q.Position.CENTER_BOTTOM);
+    edge.setStyle(Q.Styles.LABEL_BORDER, 1);
+    edge.setStyle(Q.Styles.LABEL_POINTER, true);
+    edge.setStyle(Q.Styles.LABEL_PADDING, new Q.Insets(2, 5));
+    edge.setStyle(Q.Styles.LABEL_BACKGROUND_GRADIENT, Q.Gradient.LINEAR_GRADIENT_VERTICAL);
+
+    graph.zoomToOverview();
+
+    function updateGraph() {
+        graph.clear();
+
+        var code = code_out.value;
+        try {
+            window.SVGIcons = null;
+
+            eval(code);
+
+            var x = 0, y = 0, w = graph.width, gap = 100;
+            for (var name in SVGIcons) {
+                var node = graph.createNode(name.substring(0, name.indexOf('.')), x, y);
+                node.image = name;
+                node.size = {width: gap / 1.7};
+
+                x += gap;
+                if (x > w) {
+                    x = 0;
+                    y += gap;
+                }
+            }
+
+            graph.zoomToOverview();
+        } catch (error) {
+
+        }
+    }
+
+</script>
+</body>
+</html>

@@ -1,8 +1,6 @@
-#SVG2Canvas Converter
+#SVG2Canvas Converter [SVG2Canvas - https://github.com/samsha/svg2canvas](https://github.com/samsha/svg2canvas)
 
-[SVG2Canvas](https://github.com/samsha/svg2canvas)
-
-[在线演示](http://demo.qunee.com/svg2canvas/)
+[在线演示 - http://demo.qunee.com/svg2canvas/](http://demo.qunee.com/svg2canvas/)
 
 #使用方式
 

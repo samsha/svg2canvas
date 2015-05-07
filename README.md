@@ -24,7 +24,9 @@ node run
 然后浏览器中访问index.html
 ![SVG to HTML5 Canvas](image/Screen-Shot-2015-04-30-at-6.16.41-PM-1024x581.png)
 
-#用途说明
+#[用途说明](http://blog.qunee.com/2015/04/svg-to-canvas在线转换工具/)
+
+
 
 HTML5中有两种图形解决方案：SVG和Canvas，两者都有各自特点，这里不多说，Qunee图形组件中我们常常使用SVG作为节点图标，这在大部分场景下都表现良好，但是IE下有些小问题，IE下可以将SVG图片绘制到Canvas上，但是无法读取SVG的像素信息，这意味着一些特殊功能（追踪图片边缘，图片染色等）无法被实现，这时候我们考虑选择将SVG解析，转换成Canvas的绘制代码，这样就可以使用Canvas来绘制SVG图片了
 

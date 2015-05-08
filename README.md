@@ -6,6 +6,7 @@
 
 ##目录结构
 
+```
 src/
   --canvg-master/ -- canvg.js
   canvg2.js -- 修改生成的canvg.js
@@ -13,6 +14,7 @@ src/
   run.js -- node.js代码，使用 node run运行，生成canvg2.js
   run.sh -- 运行，生成canvg2.js
 index.html -- SVG to Canvas 工具
+```
 
 ##运行
 

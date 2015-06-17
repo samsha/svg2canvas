@@ -128,7 +128,9 @@ function customCanvas(ctx, tempCtx) {
     })
 
     Object.getOwnPropertyNames(prototype).forEach(function (name) {
-        properties[name] = prototype[name] instanceof Function;
+        try{
+            properties[name] = prototype[name] instanceof Function;
+        }catch(error){}
     })
 
     delete properties.canvas;

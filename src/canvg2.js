@@ -3129,24 +3129,29 @@ function customCanvas(ctx, tempCtx) {
         }
     }
 
-    var prototype = CanvasRenderingContext2D.prototype;
+    //var prototype = CanvasRenderingContext2D.prototype;
+    //
+    //var properties = {};
+    //Object.getOwnPropertyNames(ctx).forEach(function (name) {
+    //    try{
+    //        properties[name] = ctx[name] instanceof Function;
+    //    }catch(error){}
+    //})
+    //
+    //Object.getOwnPropertyNames(prototype).forEach(function (name) {
+    //    try{
+    //        properties[name] = prototype[name] instanceof Function;
+    //    }catch(error){}
+    //})
+    //delete properties.canvas;
+    //delete properties.drawSvg;
+    //delete properties.constructor;
+    //delete properties.prototype;
+    //console.log(JSON.stringify(properties));
 
-    var properties = {};
 
-    Object.getOwnPropertyNames(ctx).forEach(function (name) {
-        properties[name] = ctx[name] instanceof Function;
-    })
+    var properties = {"webkitLineDash":false,"strokeStyle":false,"fillStyle":false,"name":false,"globalAlpha":false,"globalCompositeOperation":false,"lineWidth":false,"lineCap":false,"lineJoin":false,"miterLimit":false,"shadowOffsetX":false,"shadowOffsetY":false,"shadowBlur":false,"shadowColor":false,"lineDashOffset":false,"webkitLineDashOffset":false,"font":false,"textAlign":false,"textBaseline":false,"webkitBackingStorePixelRatio":false,"webkitImageSmoothingEnabled":false,"save":true,"restore":true,"scale":true,"rotate":true,"translate":true,"transform":true,"setTransform":true,"createLinearGradient":true,"createRadialGradient":true,"setLineDash":true,"getLineDash":true,"clearRect":true,"fillRect":true,"beginPath":true,"closePath":true,"moveTo":true,"lineTo":true,"quadraticCurveTo":true,"bezierCurveTo":true,"arcTo":true,"rect":true,"arc":true,"fill":true,"stroke":true,"clip":true,"isPointInPath":true,"isPointInStroke":true,"measureText":true,"setAlpha":true,"setCompositeOperation":true,"setLineWidth":true,"setLineCap":true,"setLineJoin":true,"setMiterLimit":true,"clearShadow":true,"fillText":true,"strokeText":true,"setStrokeColor":true,"setFillColor":true,"strokeRect":true,"drawImage":true,"drawImageFromRect":true,"setShadow":true,"putImageData":true,"webkitPutImageDataHD":true,"createPattern":true,"createImageData":true,"getImageData":true,"webkitGetImageDataHD":true,"drawFocusIfNeeded":true};
 
-    Object.getOwnPropertyNames(prototype).forEach(function (name) {
-        try{
-            properties[name] = prototype[name] instanceof Function;
-        }catch(error){}
-    })
-
-    delete properties.canvas;
-    delete properties.drawSvg;
-    delete properties.constructor;
-    delete properties.prototype;
 
     for (var name in properties) {
         if (properties[name]) {

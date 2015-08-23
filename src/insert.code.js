@@ -96,7 +96,7 @@ function customCanvas(ctx, tempCtx) {
             } else if (name == 'scale' && arguments[0] == 1 && arguments[1] == 1) {
                 //.translate(0,0)
             } else if (name == 'setLineDash') {
-				appendCode('' + ctxName + '.' + name + '([' + param + ']);\n', this);
+                appendCode('' + ctxName + '.' + name + '([' + param + ']);\n', this);
             } else {
                 appendCode('' + ctxName + '.' + name + '(' + param + ');\n', this);
             }
